@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 
 
-oauth2_schema = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 SECRET_KEY = "4d8581d1a8f7ebe2de0c2de6811185f14f2c62add85b1e3e6ba2f4005f9b1dc4"
 ALGORITHM = "HS256"
