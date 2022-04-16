@@ -1,5 +1,7 @@
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, HTTPException, status
+from fastapi.responses import FileResponse
 import shutil
+import os
 
 
 router = APIRouter(prefix="/file", tags=["file"])
@@ -19,3 +21,15 @@ def get_uploadfile(uploadfile: UploadFile = File(...)):
         shutil.copyfileobj(uploadfile.file, buffer)
 
     return {"address": path, "file_type": uploadfile.content_type}
+
+
+@router.get("/download/{name}", response_class=FileResponse)
+def download_file(name: str):
+    file_path = f"files/{name}"
+
+    if not os.path.exists(file_path):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="file not found"
+        )
+
+    return file_path
