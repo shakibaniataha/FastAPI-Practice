@@ -12,6 +12,7 @@ from db import models
 from exceptions import StoryException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 
 app = FastAPI()
@@ -23,16 +24,16 @@ app.include_router(blog_get.router)
 app.include_router(blog_post.router)
 app.include_router(authentication_router)
 
-@app.get('/hello')
+
+@app.get("/hello")
 def index():
-  return {'message': 'Hello world!'}
+    return {"message": "Hello world!"}
+
 
 @app.exception_handler(StoryException)
 def story_exception_handler(request: Request, exc: StoryException):
-  return JSONResponse(
-    status_code=418,
-    content={'detail': exc.name}
-  )
+    return JSONResponse(status_code=418, content={"detail": exc.name})
+
 
 # @app.exception_handler(HTTPException)
 # def custom_handler(request: Request, exc: StoryException):
@@ -40,14 +41,15 @@ def story_exception_handler(request: Request, exc: StoryException):
 
 models.Base.metadata.create_all(engine)
 
-origins = [
-  'http://localhost:3000'
-]
+origins = ["http://localhost:3000"]
 
 app.add_middleware(
-  CORSMiddleware,
-  allow_origins = origins,
-  allow_credentials = True,
-  allow_methods = ["*"],
-  allow_headers = ['*']
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
+
+app.mount("/files", StaticFiles(directory="files"), name="files")

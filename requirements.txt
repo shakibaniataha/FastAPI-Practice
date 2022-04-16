@@ -5,3 +5,4 @@ passlib
 bcrypt
 python-multipart
 python-jose
+aiofiles==0.8.0
