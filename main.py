@@ -1,6 +1,7 @@
 from typing import Optional
 from fastapi import FastAPI, Request
 from router import blog_get
+from router import file
 from router import blog_post
 from router import user
 from router import article
@@ -15,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 app.include_router(user.router)
+app.include_router(file.router)
 app.include_router(article.router)
 app.include_router(product.router)
 app.include_router(blog_get.router)
