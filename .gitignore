@@ -9,3 +9,4 @@ venv
 *.db
 fastapi-env
 files
+.deta
