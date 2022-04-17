@@ -19,4 +19,4 @@ def create_article(request: ArticleBase, db: Session = Depends(get_db)):
 def get_article(
     id: int, db: Session = Depends(get_db), user: UserBase = Depends(get_current_user)
 ):
-    return {"data": db_article.get_article(db, id)}
+    return db_article.get_article(db, id)
