@@ -14,6 +14,7 @@ from exceptions import StoryException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+import time
 
 
 app = FastAPI()
@@ -52,6 +53,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware('http')
+async def add_execution_duration_to_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    duration = time.time() - start_time
+    response.headers['X-duration'] = str(duration)
+    return response
 
 
 app.mount("/files", StaticFiles(directory="files"), name="files")
