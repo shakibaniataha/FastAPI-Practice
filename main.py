@@ -6,6 +6,7 @@ from router import blog_post
 from router import user
 from router import article
 from router import product
+from router import templates
 from auth.authentication import router as authentication_router
 from db.database import engine
 from db import models
@@ -22,6 +23,7 @@ app.include_router(article.router)
 app.include_router(product.router)
 app.include_router(blog_get.router)
 app.include_router(blog_post.router)
+app.include_router(templates.router)
 app.include_router(authentication_router)
 
 
@@ -53,3 +55,4 @@ app.add_middleware(
 
 
 app.mount("/files", StaticFiles(directory="files"), name="files")
+app.mount("/static", StaticFiles(directory="templates/static"), name="static")
