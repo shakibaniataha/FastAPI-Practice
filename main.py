@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, WebSocket
 from router import blog_get
 from router import file
 from router import blog_post
@@ -11,10 +11,11 @@ from auth.authentication import router as authentication_router
 from db.database import engine
 from db import models
 from exceptions import StoryException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import time
+from client import html
 
 
 app = FastAPI()
@@ -28,10 +29,26 @@ app.include_router(templates.router)
 app.include_router(authentication_router)
 
 
+@app.get("/")
+def get_chat_page():
+    return HTMLResponse(html)
+
+
 @app.get("/hello")
 def index():
     return {"message": "Hello world!"}
 
+clients = []
+
+@app.websocket('/chat')
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    clients.append(websocket)
+    while True:
+        data = await websocket.receive_text()
+        for client in clients:
+            await client.send_text(data)
+        
 
 @app.exception_handler(StoryException)
 def story_exception_handler(request: Request, exc: StoryException):
@@ -55,12 +72,12 @@ app.add_middleware(
 )
 
 
-@app.middleware('http')
+@app.middleware("http")
 async def add_execution_duration_to_header(request: Request, call_next):
     start_time = time.time()
     response = await call_next(request)
     duration = time.time() - start_time
-    response.headers['X-duration'] = str(duration)
+    response.headers["X-duration"] = str(duration)
     return response
 
 
